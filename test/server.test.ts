@@ -1,6 +1,7 @@
 import http, { IncomingMessage } from 'http';
 import listen from 'test-listen';
-import base, {
+import axios, { AxiosError } from 'axios';
+import Base, {
   Handler,
   createError,
   getJson,
@@ -8,13 +9,12 @@ import base, {
   getUrlParams,
   getQueryParams,
   getBasePath,
+  Router,
 } from '../src';
-import axios, { AxiosError } from 'axios';
-import Router from '../src/router';
 
 let server: http.Server | null = null;
 async function getUrl(fn: Handler) {
-  const srv = http.createServer(base(fn));
+  const srv = http.createServer(Base(fn));
   server = srv;
 
   return await listen(srv);
