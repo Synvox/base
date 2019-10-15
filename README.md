@@ -18,7 +18,7 @@ npm i @synvox/base
 
 ```js
 import http from 'http';
-import base, { Router, getJson } from '@synvox/base';
+import { base, Router, getJson } from '@synvox/base';
 
 const app = Router();
 
@@ -42,7 +42,7 @@ http.createServer(base(app)).listen(3000);
 With `base` you can create your own _getters_ that replace the need for most middleware.
 
 ```js
-import base, { Router, getJson } from '@synvox/base';
+import { base, Router, getJson } from '@synvox/base';
 import { connect, createError } from '@synvox/sql';
 
 const sql = connect();

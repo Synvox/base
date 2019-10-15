@@ -1,7 +1,8 @@
 import http, { IncomingMessage } from 'http';
 import listen from 'test-listen';
 import axios, { AxiosError } from 'axios';
-import Base, {
+import {
+  base as Base,
   Handler,
   createError,
   getJson,

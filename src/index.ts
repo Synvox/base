@@ -52,7 +52,7 @@ function readable(stream: any) {
   );
 }
 
-export default function base(handler: Handler) {
+export function base(handler: Handler) {
   return async (req: IncomingMessage, res: ServerResponse) => {
     let rawResponse = null;
     try {
