@@ -14,7 +14,8 @@ export type Handler = (
   | Json
   | Buffer
   | undefined
-  | Promise<Response | Json | Buffer | undefined>;
+  | any
+  | Promise<Response | Json | Buffer | undefined | any>;
 
 export type Json =
   | string
