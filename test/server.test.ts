@@ -373,6 +373,22 @@ it('should allow nesting deep routers', async () => {
   expect(body).toEqual('3rd');
 });
 
+it('should allow nesting deep routers without adding a path', async () => {
+  const app = Router();
+  const subApp = Router();
+  const subApp2 = Router();
+
+  subApp2.use('/app', () => 'res');
+
+  subApp.use(subApp2);
+  app.use(subApp);
+
+  const url = await getUrl(app);
+  const { data: body } = await axios.get(`${url}/app`);
+
+  expect(body).toEqual('res');
+});
+
 it('should 404 if no route is found', async () => {
   const app = Router();
 

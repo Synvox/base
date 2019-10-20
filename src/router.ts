@@ -10,14 +10,17 @@ const setBasePathSymbol = Symbol('BasePathSetter');
 
 export interface RouterInstance extends Handler {
   [setBasePathSymbol]: (basePath: string) => void;
-  use: (path: string, handler: Handler) => void;
-  get: (path: string, handler: Handler) => void;
-  head: (path: string, handler: Handler) => void;
-  post: (path: string, handler: Handler) => void;
-  put: (path: string, handler: Handler) => void;
-  delete: (path: string, handler: Handler) => void;
-  options: (path: string, handler: Handler) => void;
-  patch: (path: string, handler: Handler) => void;
+  use: (
+    path: string | Handler | RouterInstance,
+    handler?: Handler | RouterInstance
+  ) => void;
+  get: (path: string, handler: Handler | RouterInstance) => void;
+  head: (path: string, handler: Handler | RouterInstance) => void;
+  post: (path: string, handler: Handler | RouterInstance) => void;
+  put: (path: string, handler: Handler | RouterInstance) => void;
+  delete: (path: string, handler: Handler | RouterInstance) => void;
+  options: (path: string, handler: Handler | RouterInstance) => void;
+  patch: (path: string, handler: Handler | RouterInstance) => void;
 }
 
 type Route = {
@@ -107,14 +110,22 @@ export default function Router() {
           }
         }
       },
-      use: function use(path: string, handler: Handler | RouterInstance) {
+      use: function use(
+        path: string | Handler | RouterInstance,
+        handler?: Handler | RouterInstance
+      ) {
+        if (typeof path !== 'string') {
+          handler = path;
+          path = '';
+        }
+
         if ((handler as RouterInstance)[setBasePathSymbol] !== undefined) {
           debug('setting base path to', basePath + path);
           (handler as RouterInstance)[setBasePathSymbol](basePath + path);
         }
 
         const match = subAppMatch(basePath + path);
-        routes.push({ method: null, path, handler, match });
+        routes.push({ method: null, path, handler: handler!, match });
       },
       get: (path: string, handler: Handler) => addRoute('GET', path, handler),
       head: (path: string, handler: Handler) => addRoute('HEAD', path, handler),
