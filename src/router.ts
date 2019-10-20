@@ -8,7 +8,7 @@ const debug = Debug('router');
 
 const setBasePathSymbol = Symbol('BasePathSetter');
 
-interface Router extends Handler {
+export interface RouterInstance extends Handler {
   [setBasePathSymbol]: (basePath: string) => void;
   use: (path: string, handler: Handler) => void;
   get: (path: string, handler: Handler) => void;
@@ -23,7 +23,7 @@ interface Router extends Handler {
 type Route = {
   method: string | null;
   path: string;
-  handler: Handler | Router;
+  handler: Handler | RouterInstance;
   match: ReturnType<typeof routeMatch>;
 };
 
@@ -43,13 +43,17 @@ export default function Router() {
   let basePath = '';
   const routes: Route[] = [];
 
-  function addRoute(method: string, path: string, handler: Handler | Router) {
+  function addRoute(
+    method: string,
+    path: string,
+    handler: Handler | RouterInstance
+  ) {
     debug(`adding ${method} ${path} to router ${basePath}`);
     const match = routeMatch(basePath + path);
     routes.push({ method, path, handler, match });
   }
 
-  const router: Router = Object.assign(
+  const router: RouterInstance = Object.assign(
     async function handler(req: IncomingMessage, res: ServerResponse) {
       debug('request received', req.url);
       for (let route of routes) {
@@ -85,13 +89,15 @@ export default function Router() {
           str.endsWith('/') ? str.slice(0, -1) : str;
 
         for (let route of routes) {
-          if ((route.handler as Router)[setBasePathSymbol] !== undefined) {
+          if (
+            (route.handler as RouterInstance)[setBasePathSymbol] !== undefined
+          ) {
             const newPath = `${basePath}${route.path}`;
             debug('setting base path of sub router to', newPath);
             const match = subAppMatch(newPath);
             route.path = basePath;
             route.match = match;
-            (route.handler as Router)[setBasePathSymbol](newPath);
+            (route.handler as RouterInstance)[setBasePathSymbol](newPath);
           } else {
             const newPath = `${basePath}${route.path}`;
             debug('setting base path of route to', newPath);
@@ -101,10 +107,10 @@ export default function Router() {
           }
         }
       },
-      use: function use(path: string, handler: Handler | Router) {
-        if ((handler as Router)[setBasePathSymbol] !== undefined) {
+      use: function use(path: string, handler: Handler | RouterInstance) {
+        if ((handler as RouterInstance)[setBasePathSymbol] !== undefined) {
           debug('setting base path to', basePath + path);
-          (handler as Router)[setBasePathSymbol](basePath + path);
+          (handler as RouterInstance)[setBasePathSymbol](basePath + path);
         }
 
         const match = subAppMatch(basePath + path);
