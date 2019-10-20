@@ -4,7 +4,7 @@ import contentType from 'content-type';
 import queryString from 'query-string';
 import getRawBody from 'raw-body';
 import { Stream } from 'stream';
-export { default as Router } from './router';
+export { default as Router, RouterInstance } from './router';
 
 export type Handler = (
   req: IncomingMessage,
